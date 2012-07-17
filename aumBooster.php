@@ -1,5 +1,6 @@
 <?php
 require_once 'goutte.phar';
+require_once 'yaml/sfYaml.php';
 
 use Goutte\Client;
 
@@ -198,19 +199,5 @@ class aumBooster
 /**
  * runtime
  */
-$aumBooster = new aumBooster(array(
-    'username' => 'emcioran71@yahoo.com',
-    'password' => 'abelsalomelea',
-    'remember' => 1,
-    'age[min]' => 25,
-    'age[max]' => 45,
-    'by' => 'region',
-    'country' => 'fr',
-    'region' => 11,
-    'sex' => 1,
-    'shape' => 1,
-    'size[max]' => 220,
-    'size[min]' => 170,
-));
-
+$aumBooster = new aumBooster(sfYaml::load('aumBooster.yml'));
 $aumBooster->crawl();
