@@ -1,6 +1,10 @@
 aumBooster
 ==========
 
+Script permettant de booster la popularité d'un compte sur le site de rencontre "Adopte un Mec".
+
+Le fonctionnement est simple : le script va simuler la visite en série de tous les profils correspondant aux critères de recherche indiqués dans le fichier de configuration avec le compte utilisateur y figurant aussi.
+
 Change les informations contenues dans le fichier aumBooster.yml
 
 Lance en CLI :
