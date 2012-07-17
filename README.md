@@ -11,7 +11,7 @@ Lance en CLI :
 
     php aumBooster.php
 
-Un petit coup de :
+Ou alors, lance un petit coup de :
 
     nohup php aumBooster.php &
 
