@@ -164,7 +164,7 @@ class aumBooster
                         }
                     }
 
-                    sleep(5);
+                    sleep(rand(3, 5));
                 }
 
                 $page++;
