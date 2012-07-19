@@ -59,7 +59,7 @@ class aumBooster
             }
             catch(Exception $e)
             {
-                echo 'Timeout Homepage Form Submit' . PHP_EOL;
+                echo 'Timeout Sign In Form Submit' . PHP_EOL;
                 sleep(5);
             }
         }
@@ -71,14 +71,26 @@ class aumBooster
         {
             for($i = $this->params['age[min]']; $i <= $this->params['age[max]']; $i++)
             {
-                $this->crawlAgeRange($i, $i);
+                for($j = $this->params['size[min]']; $j <= $this->params['size[max]'] - 5; $j = $j + 5)
+                {
+                    $this->crawlAgeRange($i, $i, $j, $j + 5);
+                }
             }
         }
     }
 
-    private function crawlAgeRange($ageMin, $ageMax)
+    private function crawlAgeRange($ageMin, $ageMax, $sizeMin, $sizeMax)
     {
-        $link = $this->crawler->selectLink('Recherche')->link();
+        try
+        {
+            $link = $this->crawler->selectLink('Recherche')->link();
+        }
+        catch(InvalidArgumentException $e)
+        {
+            echo 'No Recherche Link with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
+
+            return false;
+        }
 
         $rechercheClick = false;
 
@@ -86,7 +98,7 @@ class aumBooster
         {
             try
             {
-                echo 'Recherche Link Click' . PHP_EOL;
+                echo 'Recherche Link Click with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
 
                 $this->crawler = $this->client->click($link);
 
@@ -94,14 +106,24 @@ class aumBooster
             }
             catch(Exception $e)
             {
-                echo 'Timeout Recherche Click' . PHP_EOL;
+                echo 'Timeout Recherche Click with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
+
                 sleep(5);
             }
         }
 
-        echo 'Search Form' . PHP_EOL;
+        echo 'Search Form with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
 
-        $form = $this->crawler->filter('#search-form')->form();
+        try
+        {
+            $form = $this->crawler->filter('#search-form')->form();
+        }
+        catch(InvalidArgumentException $e)
+        {
+            echo 'No Search Form with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
+
+            return false;
+        }
 
         $searchFormSubmit = false;
 
@@ -109,7 +131,7 @@ class aumBooster
         {
             try
             {
-                echo 'Search Form Submit' . PHP_EOL;
+                echo 'Search Form Submit with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
 
                 $this->crawler = $this->client->submit($form, array(
                     'age[min]' => $ageMin,
@@ -119,15 +141,15 @@ class aumBooster
                     'region' => $this->params['region'],
                     'sex' => $this->params['sex'],
                     'shape' => $this->params['shape'],
-                    'size[max]' => $this->params['size[max]'],
-                    'size[min]' => $this->params['size[min]'],
+                    'size[min]' => $sizeMin,
+                    'size[max]' => $sizeMax,
                 ));
 
                 $searchFormSubmit = true;
             }
             catch(Exception $e)
             {
-                echo 'Timeout Form Submit' . PHP_EOL;
+                echo 'Timeout Form Submit with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
                 sleep(5);
             }
         }
@@ -159,7 +181,8 @@ class aumBooster
                         }
                         catch(Exception $e)
                         {
-                            echo 'Timeout User Click' . PHP_EOL;
+                            echo 'Timeout User Click : ' . $link . PHP_EOL;
+
                             sleep(5);
                         }
                     }
@@ -181,7 +204,8 @@ class aumBooster
                     }
                     catch(Exception $e)
                     {
-                        echo 'Timeout Page ' . $page . ' Click' . PHP_EOL;
+                        echo 'Timeout Page ' . $page . ' Click with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
+
                         sleep(5);
                     }
                 }
@@ -191,7 +215,7 @@ class aumBooster
         }
         catch(InvalidArgumentException $e)
         {
-            echo 'FIN | AGE : ' . $ageMin . ' / ' . $ageMax . PHP_EOL . '----------------------' . PHP_EOL;
+            echo 'FIN | AGE : ' . $ageMin . ' / ' . $ageMax . ' | SIZE : ' . $sizeMin . ' / ' . $sizeMax . PHP_EOL . '----------------------' . PHP_EOL;
         }
     }
 }
