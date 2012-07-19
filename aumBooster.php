@@ -71,9 +71,9 @@ class aumBooster
         {
             for($i = $this->params['age[min]']; $i <= $this->params['age[max]']; $i++)
             {
-                for($j = $this->params['size[min]']; $j <= $this->params['size[max]'] - 5; $j = $j + 5)
+                for($j = $this->params['size[min]']; $j <= $this->params['size[max]']; $j = $j + 5)
                 {
-                    $this->crawlAgeRange($i, $i, $j, $j + 5);
+                    $this->crawlAgeRange($i, $i, $j, $j);
                 }
             }
         }
