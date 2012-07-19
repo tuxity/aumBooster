@@ -71,7 +71,7 @@ class aumBooster
         {
             for($i = $this->params['age[min]']; $i <= $this->params['age[max]']; $i++)
             {
-                for($j = $this->params['size[min]']; $j <= $this->params['size[max]']; $j = $j + 5)
+                for($j = $this->params['size[min]']; $j <= $this->params['size[max]']; $j += 5)
                 {
                     $this->crawlRange($i, $i, $j, $j);
                 }
@@ -155,7 +155,17 @@ class aumBooster
         }
 
         $page = 1;
-        $users = $this->crawler->filter('#users')->children();
+
+        try
+        {
+            $users = $this->crawler->filter('#users')->children();
+        }
+        catch(InvalidArgumentException $e)
+        {
+            echo 'No Users in search result with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
+
+            return false;
+        }
 
         try
         {
