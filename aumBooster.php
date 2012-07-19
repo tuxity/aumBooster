@@ -181,7 +181,7 @@ class aumBooster
                         }
                         catch(Exception $e)
                         {
-                            echo 'Timeout User Click : ' . $link . PHP_EOL;
+                            echo 'Timeout User Click : ' . $link->getUri() . PHP_EOL;
 
                             sleep(5);
                         }
