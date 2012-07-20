@@ -1,12 +1,57 @@
+# do not edit
+remember: 1
+by: region
+
+# put your username and password here
 username: johndoe@example.com
 password: mypassword
-remember: 1
+
+# france => fr
+country: fr
+
+# Region
+# [empty] => toutes les régions
+# 1 => Alsace
+# 2 => Aquitaine
+# 3 => Auvergne
+# 4 => Basse-Normandie
+# 5 => Bourgogne
+# 6 => Bretagne
+# 7 => Centre
+# 8 => Champagne-Ardenne
+# 9 => Franche-Comté
+# 10 => Haute-Normandie
+# 11 => Île-de-France
+# 12 => Languedoc-Roussillon
+# 13 => Limousin
+# 14 => Lorraine
+# 15 => Midi-Pyrénées
+# 16 => Nord-Pas-de-Calais
+# 17 => PACA
+# 18 => Pays de la Loire
+# 19 => Picardie
+# 20 => Poitou-Charentes
+# 21 => Rhône-Alpes
+# 22 => Corse
+# 23 => DOM-TOM
+region: 11
+
+# Gender you are looking for : 1 = girls / 2 = boys
+sex: 1
+
+# Silhouette :
+# 1 => svelte
+# 2 => sportive
+# 3 => équilibrée
+# 4 => pulpeuse
+# 5 => généreuse
+# 6 => normale
+shape: 1
+
+# the age range of the person you are looking for
 age[min]: 25
 age[max]: 45
-by: region
-country: fr
-region: 11
-sex: 1
-shape: 1
-size[max]: 220
+
+# the size range of the person you are looking for
 size[min]: 170
+size[max]: 185
