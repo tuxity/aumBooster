@@ -6,7 +6,8 @@ by: region
 username: "[your username]"
 password: "[your password]"
 
-# do you want to crawl only online profiles
+# Hour from which the boost will only affect online profiles
+# It is more efficient to crawl only online profiles during "rush" hours
 is_online_crawl_start_hour : 10
 is_online_crawl_stop_hour : 22
 
