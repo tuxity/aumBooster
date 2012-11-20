@@ -16,6 +16,7 @@ class aumBooster
         $this->params = $params;
 
         $this->client = new Client();
+        $this->client->setHeader('User-Agent', $this->params['user_agent']);
 
         $homepageGet = false;
 
@@ -71,14 +72,17 @@ class aumBooster
         {
             for($i = $this->params['age[min]']; $i <= $this->params['age[max]']; $i++)
             {
-/*
-                for($j = $this->params['size[min]']; $j <= $this->params['size[max]']; $j += 5)
+                if(date('H') > $this->params['is_online_crawl_start_hour'] && date('H') < $this->params['is_online_crawl_stop_hour'])
                 {
-                    $this->crawlRange($i, $i, $j, $j);
+                    $this->crawlRange($i, $i, $this->params['size[min]'], $this->params['size[max]']);
                 }
-*/
-
-                $this->crawlRange($i, $i, $this->params['size[min]'], $this->params['size[max]']);
+                else
+                {
+                    for($j = $this->params['size[min]']; $j <= $this->params['size[max]']; $j += 5)
+                    {
+                        $this->crawlRange($i, $i, $j, $j);
+                    }
+                }
             }
         }
     }
@@ -155,23 +159,26 @@ class aumBooster
                     'by' => $this->params['by'],
                     'country' => $this->params['country'],
                     'region' => $this->params['region'],
+                    'subregion' => array(),
+                    'distance[min]' => '',
+                    'distance[max]' => '',
+                    'pseudo' => '',
                     'sex' => $this->params['sex'],
-                    'shape' => $this->params['shape'],
                     'size[min]' => $sizeMin,
                     'size[max]' => $sizeMax,
-                    'pseudo' => '',
                     'weight[min]' => '',
                     'weight[max]' => '',
-                    'hair_size[]' => '',
-                    'hair_color[]' => '',
-                    'eyes_color[]' => '',
-                    'origins[]' => '',
-                    'style[]' => '',
-                    'features[]' => '',
-                    'character[]' => '',
-                    'diet[]' => '',
-                    'alcohol[]' => '',
-                    'tobacco[]' => '',
+                    'shape' => $this->params['shape'],
+                    'hair_size' => array(),
+                    'hair_color' => array(),
+                    'eyes_color' => array(),
+                    'origins' => array(),
+                    'style' => array(),
+                    'features' => array(),
+                    'character' => array(),
+                    'diet' => array(),
+                    'alcohol' => array(),
+                    'tobacco' => array(),
                 ));
 
                 $searchFormSubmit = true;

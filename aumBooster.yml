@@ -3,13 +3,26 @@ remember: 1
 by: region
 
 # put your username and password here
-username: "[your username]"
-password: "[your password]"
+username: "arthurshopenhauer@yahoo.fr"
+password: "abelsalomelea"
 
 # Hour from which the boost will only affect online profiles
 # It is more efficient to crawl only online profiles during "rush" hours
 is_online_crawl_start_hour : 10
 is_online_crawl_stop_hour : 22
+
+# Uncomment one of the following user agents. It will be used by the booster to crawl adopteunmec's website
+# As of 20th of november 2K12, those are common user agents
+user_agent : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
+#user_agent : "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:16.0) Gecko/20100101 Firefox/16.0"
+#user_agent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/536.26.14 (KHTML, like Gecko) Version/6.0.1 Safari/536.26.14"
+#user_agent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
+#user_agent : "Mozilla/5.0 (Windows NT 5.1; rv:16.0) Gecko/20100101 Firefox/16.0"
+#user_agent : "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
+#user_agent : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
+#user_agent : "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
+#user_agent : "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"
+#user_agent : "Mozilla/5.0 (Windows NT 6.1; rv:16.0) Gecko/20100101 Firefox/16.0"
 
 # france => fr
 country: fr
