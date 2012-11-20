@@ -160,6 +160,18 @@ class aumBooster
                     'size[min]' => $sizeMin,
                     'size[max]' => $sizeMax,
                     'pseudo' => '',
+                    'weight[min]' => '',
+                    'weight[max]' => '',
+                    'hair_size[]' => '',
+                    'hair_color[]' => '',
+                    'eyes_color[]' => '',
+                    'origins[]' => '',
+                    'style[]' => '',
+                    'features[]' => '',
+                    'character[]' => '',
+                    'diet[]' => '',
+                    'alcohol[]' => '',
+                    'tobacco[]' => '',
                 ));
 
                 $searchFormSubmit = true;
