@@ -3,8 +3,12 @@ remember: 1
 by: region
 
 # put your username and password here
-username: johndoe@example.com
-password: mypassword
+username: "[your username]"
+password: "[your password]"
+
+# do you want to crawl only online profiles
+is_online_crawl_start_hour : 10
+is_online_crawl_stop_hour : 22
 
 # france => fr
 country: fr
@@ -49,9 +53,9 @@ sex: 1
 shape: 1
 
 # the age range of the person you are looking for
-age[min]: 25
+age[min]: 20
 age[max]: 45
 
 # the size range of the person you are looking for
-size[min]: 170
+size[min]: 155
 size[max]: 185

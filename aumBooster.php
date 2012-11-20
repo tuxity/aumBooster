@@ -8,7 +8,7 @@ class aumBooster
 {
     private $client;
     private $crawler;
-    private $counter = 0;
+    private $usersLookupCounter = 0;
     private $params = array();
 
     public function __construct(array $params)
@@ -71,34 +71,44 @@ class aumBooster
         {
             for($i = $this->params['age[min]']; $i <= $this->params['age[max]']; $i++)
             {
+/*
                 for($j = $this->params['size[min]']; $j <= $this->params['size[max]']; $j += 5)
                 {
                     $this->crawlRange($i, $i, $j, $j);
                 }
+*/
+
+                $this->crawlRange($i, $i, $this->params['size[min]'], $this->params['size[max]']);
             }
         }
     }
 
     private function crawlRange($ageMin, $ageMax, $sizeMin, $sizeMax)
     {
+        /**
+         * Where is the search link
+         */
         try
         {
             $link = $this->crawler->selectLink('Recherche')->link();
         }
         catch(InvalidArgumentException $e)
         {
-            echo 'No Recherche Link with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
+            echo 'No "Recherche" Link with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
 
             return false;
         }
 
+        /**
+         * Click on that search link
+         */
         $rechercheClick = false;
 
         while(false === $rechercheClick)
         {
             try
             {
-                echo 'Recherche Link Click with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
+                echo '"Recherche" Link Click with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
 
                 $this->crawler = $this->client->click($link);
 
@@ -112,6 +122,9 @@ class aumBooster
             }
         }
 
+        /**
+         * Lookup for the search form
+         */
         echo 'Search Form with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
 
         try
@@ -125,6 +138,9 @@ class aumBooster
             return false;
         }
 
+        /**
+         * Submit the search form with the current parameters
+         */
         $searchFormSubmit = false;
 
         while(false === $searchFormSubmit)
@@ -143,6 +159,7 @@ class aumBooster
                     'shape' => $this->params['shape'],
                     'size[min]' => $sizeMin,
                     'size[max]' => $sizeMax,
+                    'pseudo' => '',
                 ));
 
                 $searchFormSubmit = true;
@@ -154,11 +171,14 @@ class aumBooster
             }
         }
 
+        /**
+         * Are there users in the search results ? And get the users in the first page
+         */
         $page = 1;
 
         try
         {
-            $users = $this->crawler->filter('#users')->children();
+            $users = $this->crawler->filter('#carousel #users .userpage')->children();
         }
         catch(InvalidArgumentException $e)
         {
@@ -167,37 +187,58 @@ class aumBooster
             return false;
         }
 
+        /**
+         * Paginate on the search results
+         */
         try
         {
             while(0 < $users->count())
             {
-                $links = $users->filter('.profilePicture .profileLink')->links();
+                if(date('H') > $this->params['is_online_crawl_start_hour'] && date('H') < $this->params['is_online_crawl_stop_hour'])
+                {
+                    $onlineUsers = $users->reduce(function($user){
+                        return false !== strstr($user->C14N(), '<div class="online"></div>') ? true : false;
+                    });
+
+                    if(0 === $onlineUsers->count())
+                    {
+                        echo 'No More Online Users in search result with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
+
+                        return false;
+                    }
+                }
+                else
+                {
+                    $onlineUsers = $users;
+                }
+
+                $links = $onlineUsers->filter('.profilePicture .profileLink')->links();
 
                 foreach($links as $link)
                 {
-                    $this->counter++;
+                    $userLookup = false;
 
-                    echo str_pad($this->counter, 10, '0', STR_PAD_LEFT) . ' ' . $link->getUri() . PHP_EOL;
-
-                    $userClick = false;
-
-                    while(false === $userClick)
+                    while(false === $userLookup)
                     {
                         try
                         {
                             $crawler = $this->client->click($link);
 
-                            $userClick = true;
+                            $userLookup = true;
                         }
                         catch(Exception $e)
                         {
-                            echo 'Timeout User Click : ' . $link->getUri() . PHP_EOL;
+                            echo 'Timeout User Lookup : ' . $link->getUri() . PHP_EOL;
 
                             sleep(5);
                         }
                     }
 
-                    sleep(rand(3, 5));
+                    $this->usersLookupCounter++;
+
+                    echo str_pad($this->usersLookupCounter, 10, '0', STR_PAD_LEFT) . ' ' . $link->getUri() . PHP_EOL;
+
+                    sleep(rand(3, 10));
                 }
 
                 $page++;
@@ -220,7 +261,7 @@ class aumBooster
                     }
                 }
 
-                $users = $this->crawler->filter('#users')->children();
+                $users = $this->crawler->filter('#carousel #users .userpage')->children();
             }
         }
         catch(InvalidArgumentException $e)
