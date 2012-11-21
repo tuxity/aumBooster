@@ -72,7 +72,7 @@ class aumBooster
         {
             for($i = $this->params['age[min]']; $i <= $this->params['age[max]']; $i++)
             {
-                if(date('H') > $this->params['is_online_crawl_start_hour'] && date('H') < $this->params['is_online_crawl_stop_hour'])
+                if(date('H') >= $this->params['is_online_crawl_start_hour'] && date('H') <= $this->params['is_online_crawl_stop_hour'])
                 {
                     $this->crawlRange($i, $i, $this->params['size[min]'], $this->params['size[max]']);
                 }
@@ -213,7 +213,7 @@ class aumBooster
         {
             while(0 < $users->count())
             {
-                if(date('H') > $this->params['is_online_crawl_start_hour'] && date('H') < $this->params['is_online_crawl_stop_hour'])
+                if(date('H') >= $this->params['is_online_crawl_start_hour'] && date('H') <= $this->params['is_online_crawl_stop_hour'])
                 {
                     $onlineUsers = $users->reduce(function($user){
                         return false !== strstr($user->C14N(), '<div class="online"></div>') ? true : false;
@@ -257,7 +257,7 @@ class aumBooster
 
                     echo str_pad($this->usersLookupCounter, 10, '0', STR_PAD_LEFT) . ' ' . $link->getUri() . PHP_EOL;
 
-                    sleep(rand(3, 10));
+                    sleep(rand(10, 30));
                 }
 
                 $page++;
