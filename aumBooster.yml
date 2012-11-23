@@ -1,6 +1,6 @@
 # put your username and password here
-username: "arthurshopenhauer@yahoo.fr"
-password: "abelsalomelea"
+username: "[username]"
+password: "[password]"
 
 # Hour range when the booster will only affect online profiles
 # It is more efficient to crawl only online profiles during "rush" hours
