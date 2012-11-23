@@ -5,17 +5,17 @@ Script permettant de booster la popularité d'un compte sur le site de rencontre
 
 Le fonctionnement est simple : le script va simuler la visite en série de tous les profils correspondant aux critères de recherche indiqués dans le fichier de configuration avec le compte utilisateur y figurant aussi.
 
-Change les informations contenues dans le fichier aumBooster.yml
+Change les informations contenues dans le fichier aumBooster.yml en lisant les insctructions en commentaire
 
 Lance en CLI :
 
     php aumBooster.php
 
-Ou alors, lance un petit coup de :
+Ou alors, afin de ne pas avoir besoin de conserver le terminal ouvert, lance un petit coup de :
 
     nohup php aumBooster.php &
 
-avec un :
+avec, afin de suivre la sortie, mais ce n'est pas obligatoire, un :
 
     tail -f nohup.out
 

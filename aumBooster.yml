@@ -1,75 +1,89 @@
-# do not edit
-remember: 1
-by: region
-
 # put your username and password here
-username: "[username]"
-password: "[password]"
+username: ['username']
+password: ['password']
 
 # Hour from which the boost will only affect online profiles
 # It is more efficient to crawl only online profiles during "rush" hours
 is_online_crawl_start_hour : 10
-is_online_crawl_stop_hour : 22
+is_online_crawl_stop_hour : 20
 
-# Uncomment one of the following user agents. It will be used by the booster to crawl adopteunmec's website
-# As of 20th of november 2K12, those are common user agents
-user_agent : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
-#user_agent : "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:16.0) Gecko/20100101 Firefox/16.0"
-#user_agent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/536.26.14 (KHTML, like Gecko) Version/6.0.1 Safari/536.26.14"
-#user_agent : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
-#user_agent : "Mozilla/5.0 (Windows NT 5.1; rv:16.0) Gecko/20100101 Firefox/16.0"
-#user_agent : "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
-#user_agent : "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
-#user_agent : "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
-#user_agent : "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"
-#user_agent : "Mozilla/5.0 (Windows NT 6.1; rv:16.0) Gecko/20100101 Firefox/16.0"
+form:
+    # france => fr
+    country: fr
 
-# france => fr
-country: fr
+    # Region
+    # [empty] => toutes les régions
+    # 1 => Alsace
+    # 2 => Aquitaine
+    # 3 => Auvergne
+    # 4 => Basse-Normandie
+    # 5 => Bourgogne
+    # 6 => Bretagne
+    # 7 => Centre
+    # 8 => Champagne-Ardenne
+    # 9 => Franche-Comté
+    # 10 => Haute-Normandie
+    # 11 => Île-de-France
+    # 12 => Languedoc-Roussillon
+    # 13 => Limousin
+    # 14 => Lorraine
+    # 15 => Midi-Pyrénées
+    # 16 => Nord-Pas-de-Calais
+    # 17 => PACA
+    # 18 => Pays de la Loire
+    # 19 => Picardie
+    # 20 => Poitou-Charentes
+    # 21 => Rhône-Alpes
+    # 22 => Corse
+    # 23 => DOM-TOM
+    region: 11
 
-# Region
-# [empty] => toutes les régions
-# 1 => Alsace
-# 2 => Aquitaine
-# 3 => Auvergne
-# 4 => Basse-Normandie
-# 5 => Bourgogne
-# 6 => Bretagne
-# 7 => Centre
-# 8 => Champagne-Ardenne
-# 9 => Franche-Comté
-# 10 => Haute-Normandie
-# 11 => Île-de-France
-# 12 => Languedoc-Roussillon
-# 13 => Limousin
-# 14 => Lorraine
-# 15 => Midi-Pyrénées
-# 16 => Nord-Pas-de-Calais
-# 17 => PACA
-# 18 => Pays de la Loire
-# 19 => Picardie
-# 20 => Poitou-Charentes
-# 21 => Rhône-Alpes
-# 22 => Corse
-# 23 => DOM-TOM
-region: 11
+    # Gender you are looking for : 1 = girls / 2 = boys
+    sex: 1
 
-# Gender you are looking for : 1 = girls / 2 = boys
-sex: 1
+    # Silhouette :
+    # 1 => svelte
+    # 2 => sportive
+    # 3 => équilibrée
+    # 4 => pulpeuse
+    # 5 => généreuse
+    # 6 => normale
+    shape: 1
 
-# Silhouette :
-# 1 => svelte
-# 2 => sportive
-# 3 => équilibrée
-# 4 => pulpeuse
-# 5 => généreuse
-# 6 => normale
-shape: 1
+    # the age range of the person you are looking for
+    age:
+        min: 25
+        max: 45
 
-# the age range of the person you are looking for
-age[min]: 20
-age[max]: 45
+    # the size range of the person you are looking for
+    size:
+        min: 155
+        max: 185
 
-# the size range of the person you are looking for
-size[min]: 155
-size[max]: 185
+# do not edit below this line
+    by: region
+
+remember: 1
+
+# As of 20th of november 2K12, those are common user agents, one of those will be randomly chosen by the booster
+user_agents :
+    - "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
+    - "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:16.0) Gecko/20100101 Firefox/16.0"
+    - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/536.26.14 (KHTML, like Gecko) Version/6.0.1 Safari/536.26.14"
+    - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
+    - "Mozilla/5.0 (Windows NT 5.1; rv:16.0) Gecko/20100101 Firefox/16.0"
+    - "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
+    - "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
+    - "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4"
+    - "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)"
+    - "Mozilla/5.0 (Windows NT 6.1; rv:16.0) Gecko/20100101 Firefox/16.0"
+
+retry_timeout: 5
+online_id_string: "<div class=\"online\"></div>"
+
+sleep_between_hits:
+    min: 5
+    max: 15
+
+max_hits_by_period: 5
+hits_counters_ttl: 86400

@@ -10,13 +10,14 @@ class aumBooster
     private $crawler;
     private $usersLookupCounter = 0;
     private $params = array();
+    private $hitCountersTab = array();
 
     public function __construct(array $params)
     {
         $this->params = $params;
 
         $this->client = new Client();
-        $this->client->setHeader('User-Agent', $this->params['user_agent']);
+        $this->client->setHeader('User-Agent', $this->params['user_agents'][rand(0, count($this->params['user_agents']) - 1)]);
 
         $homepageGet = false;
 
@@ -33,7 +34,7 @@ class aumBooster
             catch(Exception $e)
             {
                 echo 'Timeout Homepage GET' . PHP_EOL;
-                sleep(5);
+                sleep($this->params['retry_timeout']);
             }
         }
 
@@ -61,7 +62,7 @@ class aumBooster
             catch(Exception $e)
             {
                 echo 'Timeout Sign In Form Submit' . PHP_EOL;
-                sleep(5);
+                sleep($this->params['retry_timeout']);
             }
         }
     }
@@ -70,15 +71,15 @@ class aumBooster
     {
         while(true)
         {
-            for($i = $this->params['age[min]']; $i <= $this->params['age[max]']; $i++)
+            for($i = $this->params['form']['age']['min']; $i <= $this->params['form']['age']['max']; $i++)
             {
                 if(date('H') >= $this->params['is_online_crawl_start_hour'] && date('H') <= $this->params['is_online_crawl_stop_hour'])
                 {
-                    $this->crawlRange($i, $i, $this->params['size[min]'], $this->params['size[max]']);
+                    $this->crawlRange($i, $i, $this->params['form']['size']['min'], $this->params['form']['size']['max']);
                 }
                 else
                 {
-                    for($j = $this->params['size[min]']; $j <= $this->params['size[max]']; $j += 5)
+                    for($j = $this->params['form']['size']['min']; $j <= $this->params['form']['size']['max']; $j += 5)
                     {
                         $this->crawlRange($i, $i, $j, $j);
                     }
@@ -121,8 +122,7 @@ class aumBooster
             catch(Exception $e)
             {
                 echo 'Timeout Recherche Click with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
-
-                sleep(5);
+                sleep($this->params['retry_timeout']);
             }
         }
 
@@ -156,19 +156,19 @@ class aumBooster
                 $this->crawler = $this->client->submit($form, array(
                     'age[min]' => $ageMin,
                     'age[max]' => $ageMax,
-                    'by' => $this->params['by'],
-                    'country' => $this->params['country'],
-                    'region' => $this->params['region'],
+                    'by' => $this->params['form']['by'],
+                    'country' => $this->params['form']['country'],
+                    'region' => $this->params['form']['region'],
                     'subregion' => array(),
                     'distance[min]' => '',
                     'distance[max]' => '',
                     'pseudo' => '',
-                    'sex' => $this->params['sex'],
+                    'sex' => $this->params['form']['sex'],
                     'size[min]' => $sizeMin,
                     'size[max]' => $sizeMax,
                     'weight[min]' => '',
                     'weight[max]' => '',
-                    'shape' => $this->params['shape'],
+                    'shape' => $this->params['form']['shape'],
                     'hair_size' => array(),
                     'hair_color' => array(),
                     'eyes_color' => array(),
@@ -186,7 +186,7 @@ class aumBooster
             catch(Exception $e)
             {
                 echo 'Timeout Form Submit with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
-                sleep(5);
+                sleep($this->params['retry_timeout']);
             }
         }
 
@@ -213,10 +213,14 @@ class aumBooster
         {
             while(0 < $users->count())
             {
+                $this->hitCountersPurge();
+
                 if(date('H') >= $this->params['is_online_crawl_start_hour'] && date('H') <= $this->params['is_online_crawl_stop_hour'])
                 {
-                    $onlineUsers = $users->reduce(function($user){
-                        return false !== strstr($user->C14N(), '<div class="online"></div>') ? true : false;
+                    $onlineIdString = $this->params['online_id_string'];
+
+                    $onlineUsers = $users->reduce(function($user)use($onlineIdString){
+                        return false !== strstr($user->C14N(), $onlineIdString) ? true : false;
                     });
 
                     if(0 === $onlineUsers->count())
@@ -235,29 +239,32 @@ class aumBooster
 
                 foreach($links as $link)
                 {
-                    $userLookup = false;
-
-                    while(false === $userLookup)
+                    if(empty($this->hitCountersTab[$link->getUri()]) || count($this->hitCountersTab[$link->getUri()]) <= $params['max_hits_by_period'])
                     {
-                        try
-                        {
-                            $crawler = $this->client->click($link);
+                        $userLookup = false;
 
-                            $userLookup = true;
-                        }
-                        catch(Exception $e)
+                        while(false === $userLookup)
                         {
-                            echo 'Timeout User Lookup : ' . $link->getUri() . PHP_EOL;
+                            try
+                            {
+                                $crawler = $this->client->click($link);
 
-                            sleep(5);
+                                $userLookup = true;
+                            }
+                            catch(Exception $e)
+                            {
+                                echo 'Timeout User Lookup : ' . $link->getUri() . PHP_EOL;
+                                sleep($this->params['retry_timeout']);
+                            }
                         }
+
+                        $this->hitCountersTab[$link->getUri()][] = time();
+                        $this->usersLookupCounter++;
+
+                        echo str_pad($this->usersLookupCounter, 10, '0', STR_PAD_LEFT) . ' ' . $link->getUri() . PHP_EOL;
+
+                        sleep(rand($this->params['sleep_between_hits']['min'], $this->params['sleep_between_hits']['max']));
                     }
-
-                    $this->usersLookupCounter++;
-
-                    echo str_pad($this->usersLookupCounter, 10, '0', STR_PAD_LEFT) . ' ' . $link->getUri() . PHP_EOL;
-
-                    sleep(rand(10, 30));
                 }
 
                 $page++;
@@ -275,8 +282,7 @@ class aumBooster
                     catch(Exception $e)
                     {
                         echo 'Timeout Page ' . $page . ' Click with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
-
-                        sleep(5);
+                        sleep($this->params['retry_timeout']);
                     }
                 }
 
@@ -285,7 +291,21 @@ class aumBooster
         }
         catch(InvalidArgumentException $e)
         {
-            echo 'FIN | AGE : ' . $ageMin . ' / ' . $ageMax . ' | SIZE : ' . $sizeMin . ' / ' . $sizeMax . PHP_EOL . '----------------------' . PHP_EOL;
+            echo 'END | AGE : ' . $ageMin . ' / ' . $ageMax . ' | SIZE : ' . $sizeMin . ' / ' . $sizeMax . PHP_EOL . '----------------------' . PHP_EOL;
+        }
+    }
+
+    private function hitCountersPurge()
+    {
+        foreach($this->hitCountersTab as $link => $hits)
+        {
+            foreach($hits as $key => $timestamp)
+            {
+                if($timestamp < time() - $params['hits_counters_ttl'])
+                {
+                    unset($this->hitCountersTab[$link][$key]);
+                }
+            }
         }
     }
 }
