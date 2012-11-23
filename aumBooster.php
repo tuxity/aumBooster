@@ -75,16 +75,25 @@ class aumBooster
             {
                 if(date('H') >= $this->params['is_online_crawl_start_hour'] && date('H') <= $this->params['is_online_crawl_stop_hour'])
                 {
+                    $this->waitForCrawlHours();
                     $this->crawlRange($i, $i, $this->params['form']['size']['min'], $this->params['form']['size']['max']);
                 }
                 else
                 {
                     for($j = $this->params['form']['size']['min']; $j <= $this->params['form']['size']['max']; $j += 5)
                     {
+                        $this->waitForCrawlHours();
                         $this->crawlRange($i, $i, $j, $j);
                     }
                 }
             }
+        }
+    }
+
+    private function waitForCrawlHours(){
+        while(date('H') >= $this->params['crawl_start'] && date('H') <= $this->params['crawl_stop'])
+        {
+            sleep(3600);
         }
     }
 

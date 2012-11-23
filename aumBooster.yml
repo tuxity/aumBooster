@@ -1,11 +1,15 @@
 # put your username and password here
-username: "[username]"
-password: "[password]"
+username: "arthurshopenhauer@yahoo.fr"
+password: "abelsalomelea"
 
-# Hour from which the boost will only affect online profiles
+# Hour range when the booster will only affect online profiles
 # It is more efficient to crawl only online profiles during "rush" hours
-is_online_crawl_start_hour : 10
+is_online_crawl_start_hour : 17
 is_online_crawl_stop_hour : 20
+
+# Hours range when the booster is active
+crawl_start: 10
+crawl_end: 23
 
 form:
     # france => fr
