@@ -1,6 +1,6 @@
 # put your username and password here
-username: ['username']
-password: ['password']
+username: "[username]"
+password: "[password]"
 
 # Hour from which the boost will only affect online profiles
 # It is more efficient to crawl only online profiles during "rush" hours
