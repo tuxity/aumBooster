@@ -11,14 +11,14 @@ class aumBooster
     private $usersLookupCounter = 0;
     private $params = array();
     private $hitCountersTab = array();
+    private $sessionCookie = null;
+    private $userId = null;
+    private $contactIds = array();
 
     public function __construct(array $params)
     {
-        $this->params = $params;
-
         $this->client = new Client();
-        $this->client->setHeader('User-Agent', $this->params['user_agents'][rand(0, count($this->params['user_agents']) - 1)]);
-
+        $this->params = $params;
         $homepageGet = false;
 
         while(false === $homepageGet)
@@ -27,7 +27,13 @@ class aumBooster
             {
                 echo 'Homepage GET' . PHP_EOL;
 
-                $this->crawler = $this->client->request('GET', 'http://www.adopteunmec.com/');
+                $this->crawler = $this->client->request(
+                    'GET',
+                    'http://www.adopteunmec.com/',
+                    array(),
+                    array(),
+                    array('HTTP_USER_AGENT' => $this->params['user_agents'][rand(0, count($this->params['user_agents']) - 1)])
+                );
 
                 $homepageGet = true;
             }
@@ -48,14 +54,16 @@ class aumBooster
         {
             try
             {
-
                 echo 'Homepage Form Submit' . PHP_EOL;
 
-                $this->crawler = $this->client->submit($form, array(
-                    'username' => $this->params['username'],
-                    'password' => $this->params['password'],
-                    'remember' => $this->params['remember'],
-                ));
+                $this->crawler = $this->client->submit(
+                    $form,
+                    array(
+                        'username' => $this->params['username'],
+                        'password' => $this->params['password'],
+                        'remember' => $this->params['remember'],
+                    )
+                );
 
                 $homepageFormSubmit = true;
             }
@@ -65,6 +73,9 @@ class aumBooster
                 sleep($this->params['retry_timeout']);
             }
         }
+
+        $this->sessionCookie = $this->client->getCookieJar()->get('AUMSESSID')->getValue();
+        $this->userId = $this->client->getCookieJar()->get('aum_user')->getValue();
     }
 
     public function crawl()
@@ -91,9 +102,29 @@ class aumBooster
     }
 
     private function waitForCrawlHours(){
-        while(date('H') >= $this->params['crawl_start'] && date('H') <= $this->params['crawl_stop'])
+        while(date('H') < $this->params['crawl_start'] || date('H') > $this->params['crawl_end'])
         {
             sleep(3600);
+        }
+    }
+
+    private function populateContactIds()
+    {
+        $this->contactIds = array();
+
+        $this->crawler = $this->client->request(
+            'GET',
+            'http://chat.vty.adopteunmec.com/?userid=' . $this->userId . '&cookie=' . $this->sessionCookie . '&url=http%3A%2F%2Fwww.adopteunmec.com%2F',
+            array(),
+            array(),
+            array('HTTP_USER_AGENT' => $this->params['user_agents'][rand(0, count($this->params['user_agents']) - 1)])
+        );
+
+        $tabContacts = $this->crawler->filter('#contactGroups li a')->links();
+
+        foreach($tabContacts as $contactLink)
+        {
+            $this->contactIds[] = substr($contactLink->getUri(), 36);
         }
     }
 
@@ -112,6 +143,8 @@ class aumBooster
 
             return false;
         }
+
+        $this->populateContactIds();
 
         /**
          * Click on that search link
@@ -248,31 +281,37 @@ class aumBooster
 
                 foreach($links as $link)
                 {
-                    if(empty($this->hitCountersTab[$link->getUri()]) || count($this->hitCountersTab[$link->getUri()]) <= $params['max_hits_by_period'])
+                    if(!in_array(substr($link->getUri(), 36), $this->contactIds))
                     {
-                        $userLookup = false;
-
-                        while(false === $userLookup)
+                        if(
+                            empty($this->hitCountersTab[$link->getUri()]) ||
+                            count($this->hitCountersTab[$link->getUri()]) <= $params['max_hits_by_period']
+                        )
                         {
-                            try
-                            {
-                                $crawler = $this->client->click($link);
+                            $userLookup = false;
 
-                                $userLookup = true;
-                            }
-                            catch(Exception $e)
+                            while(false === $userLookup)
                             {
-                                echo 'Timeout User Lookup : ' . $link->getUri() . PHP_EOL;
-                                sleep($this->params['retry_timeout']);
+                                try
+                                {
+                                    $crawler = $this->client->click($link);
+
+                                    $userLookup = true;
+                                }
+                                catch(Exception $e)
+                                {
+                                    echo 'Timeout User Lookup : ' . $link->getUri() . PHP_EOL;
+                                    sleep($this->params['retry_timeout']);
+                                }
                             }
+
+                            $this->hitCountersTab[$link->getUri()][] = time();
+                            $this->usersLookupCounter++;
+
+                            echo str_pad($this->usersLookupCounter, 10, '0', STR_PAD_LEFT) . ' ' . $link->getUri() . PHP_EOL;
+
+                            sleep(rand($this->params['sleep_between_hits']['min'], $this->params['sleep_between_hits']['max']));
                         }
-
-                        $this->hitCountersTab[$link->getUri()][] = time();
-                        $this->usersLookupCounter++;
-
-                        echo str_pad($this->usersLookupCounter, 10, '0', STR_PAD_LEFT) . ' ' . $link->getUri() . PHP_EOL;
-
-                        sleep(rand($this->params['sleep_between_hits']['min'], $this->params['sleep_between_hits']['max']));
                     }
                 }
 
@@ -284,7 +323,13 @@ class aumBooster
                 {
                     try
                     {
-                        $this->crawler = $this->client->request('GET', 'http://www.adopteunmec.com/mySearch?page=' . $page);
+                        $this->crawler = $this->client->request(
+                            'GET',
+                            'http://www.adopteunmec.com/mySearch?page=' . $page,
+                            array(),
+                            array(),
+                            array('HTTP_USER_AGENT' => $this->params['user_agents'][rand(0, count($this->params['user_agents']) - 1)])
+                        );
 
                         $pageClick = true;
                     }
