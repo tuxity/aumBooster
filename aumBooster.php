@@ -13,7 +13,7 @@ class aumBooster
     private $hitCountersTab = array();
     private $sessionCookie = null;
     private $userId = null;
-    private $contactIds = array();
+    private $contactIdsTab = array();
 
     public function __construct(array $params)
     {
@@ -108,9 +108,9 @@ class aumBooster
         }
     }
 
-    private function populateContactIds()
+    private function populatecontactIdsTab()
     {
-        $this->contactIds = array();
+        $this->contactIdsTab = array();
 
         $this->crawler = $this->client->request(
             'GET',
@@ -124,7 +124,7 @@ class aumBooster
 
         foreach($tabContacts as $contactLink)
         {
-            $this->contactIds[] = substr($contactLink->getUri(), 36);
+            $this->contactIdsTab[] = substr($contactLink->getUri(), 36);
         }
     }
 
@@ -144,7 +144,7 @@ class aumBooster
             return false;
         }
 
-        $this->populateContactIds();
+        $this->populatecontactIdsTab();
 
         /**
          * Click on that search link
@@ -281,7 +281,7 @@ class aumBooster
 
                 foreach($links as $link)
                 {
-                    if(!in_array(substr($link->getUri(), 36), $this->contactIds))
+                    if(!in_array(substr($link->getUri(), 36), $this->contactIdsTab))
                     {
                         if(
                             empty($this->hitCountersTab[$link->getUri()]) ||
