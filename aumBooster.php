@@ -355,7 +355,7 @@ class aumBooster
         {
             foreach($hits as $key => $timestamp)
             {
-                if($timestamp < time() - $params['hits_counters_ttl'])
+                if($timestamp < time() - $this->params['hits_counters_ttl'])
                 {
                     unset($this->hitCountersTab[$link][$key]);
                 }
