@@ -17,8 +17,10 @@ class aumBooster
 
     public function __construct(array $params)
     {
-        $this->client = new Client();
         $this->params = $params;
+
+        $this->client = new Client(array('HTTP_USER_AGENT' => $this->params['user_agents'][rand(0, count($this->params['user_agents']) - 1)]));
+
         $homepageGet = false;
 
         while(false === $homepageGet)
@@ -27,13 +29,7 @@ class aumBooster
             {
                 echo 'Homepage GET' . PHP_EOL;
 
-                $this->crawler = $this->client->request(
-                    'GET',
-                    'http://www.adopteunmec.com/',
-                    array(),
-                    array(),
-                    array('HTTP_USER_AGENT' => $this->params['user_agents'][rand(0, count($this->params['user_agents']) - 1)])
-                );
+                $this->crawler = $this->client->request('GET', 'http://www.adopteunmec.com/');
 
                 $homepageGet = true;
             }
@@ -112,13 +108,7 @@ class aumBooster
     {
         $this->contactIdsTab = array();
 
-        $this->crawler = $this->client->request(
-            'GET',
-            'http://chat.vty.adopteunmec.com/?userid=' . $this->userId . '&cookie=' . $this->sessionCookie . '&url=http%3A%2F%2Fwww.adopteunmec.com%2F',
-            array(),
-            array(),
-            array('HTTP_USER_AGENT' => $this->params['user_agents'][rand(0, count($this->params['user_agents']) - 1)])
-        );
+        $this->crawler = $this->client->request('GET', 'http://chat.vty.adopteunmec.com/?userid=' . $this->userId . '&cookie=' . $this->sessionCookie . '&url=http%3A%2F%2Fwww.adopteunmec.com%2F');
 
         $tabContacts = $this->crawler->filter('#contactGroups li a')->links();
 
@@ -323,13 +313,7 @@ class aumBooster
                 {
                     try
                     {
-                        $this->crawler = $this->client->request(
-                            'GET',
-                            'http://www.adopteunmec.com/mySearch?page=' . $page,
-                            array(),
-                            array(),
-                            array('HTTP_USER_AGENT' => $this->params['user_agents'][rand(0, count($this->params['user_agents']) - 1)])
-                        );
+                        $this->crawler = $this->client->request('GET', 'http://www.adopteunmec.com/mySearch?page=' . $page);
 
                         $pageClick = true;
                     }
