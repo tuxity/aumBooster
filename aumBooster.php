@@ -275,7 +275,7 @@ class aumBooster
                     {
                         if(
                             empty($this->hitCountersTab[$link->getUri()]) ||
-                            count($this->hitCountersTab[$link->getUri()]) <= $params['max_hits_by_period']
+                            count($this->hitCountersTab[$link->getUri()]) <= $this->params['max_hits_by_period']
                         )
                         {
                             $userLookup = false;
