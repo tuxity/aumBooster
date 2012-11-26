@@ -108,7 +108,22 @@ class aumBooster
     {
         $this->contactIdsTab = array();
 
-        $this->crawler = $this->client->request('GET', 'http://chat.vty.adopteunmec.com/?userid=' . $this->userId . '&cookie=' . $this->sessionCookie . '&url=http%3A%2F%2Fwww.adopteunmec.com%2F');
+        $chatLoaded = false;
+
+        while(false === $chatLoaded)
+        {
+            try
+            {
+                $this->crawler = $this->client->request('GET', 'http://chat.vty.adopteunmec.com/?userid=' . $this->userId . '&cookie=' . $this->sessionCookie . '&url=http%3A%2F%2Fwww.adopteunmec.com%2F');
+
+                $chatLoaded = true;
+            }
+            catch(Exception $e)
+            {
+                echo 'Timeout Loading AuM Chat' . PHP_EOL;
+                sleep($this->params['retry_timeout']);
+            }
+        }
 
         $tabContacts = $this->crawler->filter('#contactGroups li a')->links();
 
