@@ -313,7 +313,7 @@ class aumBooster
                             $this->hitCountersTab[$link->getUri()][] = time();
                             $this->usersLookupCounter++;
 
-                            echo str_pad($this->usersLookupCounter, 10, '0', STR_PAD_LEFT) . ' ' . $link->getUri() . PHP_EOL;
+                            echo str_pad($this->usersLookupCounter, 10, '0', STR_PAD_LEFT) . ' (' . count($this->hitCountersTab[$link->getUri()]) . ') ' . $link->getUri() . PHP_EOL;
 
                             sleep(rand($this->params['sleep_between_hits']['min'], $this->params['sleep_between_hits']['max']));
                         }
