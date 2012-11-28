@@ -104,10 +104,8 @@ class aumBooster
         }
     }
 
-    private function populatecontactIdsTab()
+    private function getContactIds()
     {
-        $this->contactIdsTab = array();
-
         $chatLoaded = false;
 
         while(false === $chatLoaded)
@@ -129,8 +127,10 @@ class aumBooster
 
         foreach($tabContacts as $contactLink)
         {
-            $this->contactIdsTab[] = substr($contactLink->getUri(), 36);
+            $contactIdsTab[] = substr($contactLink->getUri(), 36);
         }
+
+        return $contactIdsTab;
     }
 
     private function crawlRange($ageMin, $ageMax, $sizeMin, $sizeMax)
@@ -149,7 +149,7 @@ class aumBooster
             return false;
         }
 
-        $this->populatecontactIdsTab();
+        $this->contactIdsTab = $this->getContactIds();
 
         /**
          * Click on that search link
@@ -286,7 +286,7 @@ class aumBooster
 
                 foreach($links as $link)
                 {
-                    if(!in_array(substr($link->getUri(), 36), $this->contactIdsTab))
+                    if(!in_array(substr($link->getUri(), 35), $this->contactIdsTab))
                     {
                         if(
                             empty($this->hitCountersTab[$link->getUri()]) ||
