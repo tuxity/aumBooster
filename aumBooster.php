@@ -19,6 +19,8 @@ class aumBooster
     {
         $this->params = $params;
 
+	date_default_timezone_set($this->params['default_timezone']);
+
         $this->client = new Client(array('HTTP_USER_AGENT' => $this->params['user_agents'][rand(0, count($this->params['user_agents']) - 1)]));
 
         $homepageGet = false;

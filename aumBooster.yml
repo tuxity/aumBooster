@@ -4,12 +4,15 @@ password: "[password]"
 
 # Hour range when the booster will only affect online profiles
 # It is more efficient to crawl only online profiles during "rush" hours
-is_online_crawl_start_hour : 17
+is_online_crawl_start_hour : 10
 is_online_crawl_stop_hour : 22
 
 # Hours range when the booster is active
 crawl_start: 10
 crawl_end: 23
+
+# Timezone : http://php.net/manual/fr/timezones.php
+default_timezone: "Europe/Paris"
 
 form:
     # france => fr
