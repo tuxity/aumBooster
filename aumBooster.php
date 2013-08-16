@@ -80,21 +80,14 @@ class aumBooster
     {
         while(true)
         {
-            for($i = $this->params['form']['age']['min']; $i <= $this->params['form']['age']['max']; $i++)
+            if(date('H') >= $this->params['is_online_crawl_start_hour'] && date('H') <= $this->params['is_online_crawl_stop_hour'])
             {
-                if(date('H') >= $this->params['is_online_crawl_start_hour'] && date('H') <= $this->params['is_online_crawl_stop_hour'])
-                {
-                    $this->waitForCrawlHours();
-                    $this->crawlRange($i, $i, $this->params['form']['size']['min'], $this->params['form']['size']['max']);
-                }
-                else
-                {
-                    for($j = $this->params['form']['size']['min']; $j <= $this->params['form']['size']['max']; $j += 5)
-                    {
-                        $this->waitForCrawlHours();
-                        $this->crawlRange($i, $i, $j, $j);
-                    }
-                }
+                $this->crawlRange($this->params['form']['age']['min'], $this->params['form']['age']['max'], $this->params['form']['size']['min'], $this->params['form']['size']['max']);
+            }
+            else
+            {
+                $this->waitForCrawlHours();
+                $this->crawlRange($this->params['form']['age']['min'], $this->params['form']['age']['max'], $this->params['form']['size']['min'], $this->params['form']['size']['max']);
             }
         }
     }
