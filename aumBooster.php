@@ -203,52 +203,12 @@ class aumBooster
             {
                 echo 'Search Form Submit with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
 
-                $this->crawler = $this->client->submit($form, array(
-                    'age[min]' => $ageMin,
-                    'age[max]' => $ageMax,
-                    'age_step' => '1',
-                    'by' => $this->params['form']['by'],
-                    'country' => $this->params['form']['country'],
-                    'region' => $this->params['form']['region'],
-                    'subregion[]' => array(),
-                    'distance[min]' => '',
-                    'distance[max]' => '',
-                    'distance_step' => '10',
-                    'pseudo' => '',
-                    'sex' => $this->params['form']['sex'],
-                    'size[min]' => $sizeMin,
-                    'size[max]' => $sizeMax,
-                    'size_step' => '5',
-                    'weight[min]' => '',
-                    'weight[max]' => '',
-                    'weight_step' => '5',
-                    'mandatory[]' => 'shape',
-                    'shape[]' => array($this->params['form']['shape']),
-                    'mandatory[]' => 'eyes_color',
-                    'eyes_color[]' => array(),
-                    'mandatory[]' => 'origins',
-                    'origins[]' => array(),
-                    'mandatory[]' => 'hair_color',
-                    'hair_color[]' => array(),
-                    'mandatory[]' => 'hair_size',
-                    'hair_size[]' => array(),
-                    'mandatory[]' => 'hair_style',
-                    'hair_style[]' => array(),
-                    'mandatory[]' => 'styles',
-                    'styles[]' => array(),
-                    'mandatory[]' => 'character',
-                    'character[]' => array(),
-                    'mandatory[]' => 'features',
-                    'features[]' => array(),
-                    'mandatory[]' => 'diet',
-                    'diet[]' => array(),
-                    'mandatory[]' => 'favourite_food',
-                    'favourite_food[]'=> array(),
-                    'mandatory[]' => 'tobacco',
-                    'tobacco[]' => array(),
-                    'mandatory[]' => 'alcohol',
-                    'alcohol[]' => array(),
-                ));
+                $array = $form->getValues();
+                
+                // override form value here
+                $array['subregion'] = array();
+
+                $this->crawler = $this->client->submit($form, $array);
 
                 $searchFormSubmit = true;
             }
@@ -266,7 +226,9 @@ class aumBooster
 
         try
         {
-            $users = $this->crawler->filter('#carousel #users .userpage')->children();
+            preg_match('/var members = (.*);/', $this->client->getResponse()->getContent(), $matches);
+            $res = json_decode($matches[1]);
+            $users = $res->members;
         }
         catch(InvalidArgumentException $e)
         {
@@ -280,19 +242,17 @@ class aumBooster
          */
         try
         {
-            while(0 < $users->count())
+            while(0 < count($users))
             {
                 $this->hitCountersPurge();
 
                 if(date('H') >= $this->params['is_online_crawl_start_hour'] && date('H') <= $this->params['is_online_crawl_stop_hour'])
                 {
-                    $onlineIdString = $this->params['online_id_string'];
-
-                    $onlineUsers = $users->reduce(function($user)use($onlineIdString){
-                        return false !== strstr($user->C14N(), $onlineIdString) ? true : false;
+                    $onlineUsers = array_filter($users, function($user) {
+                        return false !== ($user->isOnline == '1') ? true : false;
                     });
 
-                    if(0 === $onlineUsers->count())
+                    if(0 === count($onlineUsers))
                     {
                         echo 'No More Online Users in search result with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
 
@@ -304,15 +264,18 @@ class aumBooster
                     $onlineUsers = $users;
                 }
 
-                $links = $onlineUsers->filter('.profilePicture .profileLink')->links();
+                $links = array();
+                foreach ($onlineUsers as $user) {
+                    array_push($links, $user->url);
+                }
 
                 foreach($links as $link)
                 {
-                    if(!in_array(substr($link->getUri(), 35), $this->contactIdsTab))
+                    if(!in_array(substr($link, 35), $this->contactIdsTab))
                     {
                         if(
-                            empty($this->hitCountersTab[$link->getUri()]) ||
-                            count($this->hitCountersTab[$link->getUri()]) < $this->params['max_hits_by_period']
+                            empty($this->hitCountersTab[$link]) ||
+                            count($this->hitCountersTab[$link]) < $this->params['max_hits_by_period']
                         )
                         {
                             $userLookup = false;
@@ -321,21 +284,21 @@ class aumBooster
                             {
                                 try
                                 {
-                                    $crawler = $this->client->click($link);
+                                    $crawler = $this->client->request('GET', 'http://www.adopteunmec.com' . $link);
 
                                     $userLookup = true;
                                 }
                                 catch(Exception $e)
                                 {
-                                    echo 'Timeout User Lookup : ' . $link->getUri() . PHP_EOL;
+                                    echo 'Timeout User Lookup : ' . $link . PHP_EOL;
                                     sleep($this->params['retry_timeout']);
                                 }
                             }
 
-                            $this->hitCountersTab[$link->getUri()][] = time();
+                            $this->hitCountersTab[$link][] = time();
                             $this->usersLookupCounter++;
 
-                            echo str_pad($this->usersLookupCounter, 10, '0', STR_PAD_LEFT) . ' (' . count($this->hitCountersTab[$link->getUri()]) . ') ' . $link->getUri() . PHP_EOL;
+                            echo str_pad($this->usersLookupCounter, 10, '0', STR_PAD_LEFT) . ' (' . count($this->hitCountersTab[$link]) . ') ' . $link . PHP_EOL;
 
                             sleep(rand($this->params['sleep_between_hits']['min'], $this->params['sleep_between_hits']['max']));
                         }
@@ -361,7 +324,9 @@ class aumBooster
                     }
                 }
 
-                $users = $this->crawler->filter('#carousel #users .userpage')->children();
+                preg_match('/var members = (.*);/', $this->client->getResponse()->getContent(), $matches);
+                $res = json_decode($matches[1]);
+                $users = $res->members;
             }
         }
         catch(InvalidArgumentException $e)
