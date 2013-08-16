@@ -204,9 +204,24 @@ class aumBooster
                 echo 'Search Form Submit with age beetween ' . $ageMin . ' and ' . $ageMax . ' and size beetween ' . $sizeMin . ' and ' . $sizeMax . PHP_EOL;
 
                 $array = $form->getValues();
-                
                 // override form value here
+                $array['age[min]'] = $ageMin;
+                $array['age[max]'] = $ageMax;
+                $array['by'] = $this->params['form']['by'];
+                $array['country'] = $this->params['form']['country'];
+                $array['region'] = $this->params['form']['region'];
                 $array['subregion'] = array();
+                $array['sex'] = $this->params['form']['sex'];
+                $array['size[min]'] = $sizeMin;
+                $array['size[max]'] = $sizeMax;
+
+                // weirdo, but should work
+                foreach ($this->params['form']['shape'] as $key => $shape) {
+                    $array['shape[' . $key . ']'] = $shape;
+                }
+                foreach ($this->params['form']['shape'] as $key => $shape) {
+                    $array['shape[' . (6 + $key) . ']'] = $shape;
+                }
 
                 $this->crawler = $this->client->submit($form, $array);
 

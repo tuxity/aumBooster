@@ -55,7 +55,7 @@ form:
     # 4 => pulpeuse
     # 5 => généreuse
     # 6 => normale
-    shape: 1
+    shape: [1, 2]
 
     # the age range of the person you are looking for
     age:
