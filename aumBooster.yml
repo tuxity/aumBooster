@@ -86,7 +86,6 @@ user_agents :
     - "Mozilla/5.0 (Windows NT 6.1; rv:16.0) Gecko/20100101 Firefox/16.0"
 
 retry_timeout: 5
-online_id_string: "<div class=\"online\"></div>"
 
 sleep_between_hits:
     min: 5
