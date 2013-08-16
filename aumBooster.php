@@ -44,7 +44,7 @@ class aumBooster
 
         echo 'Homepage Form' . PHP_EOL;
 
-        $form = $this->crawler->filter('#cart form')->form();
+        $form = $this->crawler->filter('#login')->form();
 
         $homepageFormSubmit = false;
 
@@ -72,7 +72,7 @@ class aumBooster
             }
         }
 
-        $this->sessionCookie = $this->client->getCookieJar()->get('AUMSESSID')->getValue();
+        $this->sessionCookie = $this->client->getCookieJar()->get('AUMSESSID21')->getValue();
         $this->userId = $this->client->getCookieJar()->get('aum_user')->getValue();
     }
 
@@ -127,6 +127,7 @@ class aumBooster
 
         $tabContacts = $this->crawler->filter('#contactGroups li a')->links();
 
+        $contactIdsTab = array();
         foreach($tabContacts as $contactLink)
         {
             $contactIdsTab[] = substr($contactLink->getUri(), 36);
@@ -205,29 +206,48 @@ class aumBooster
                 $this->crawler = $this->client->submit($form, array(
                     'age[min]' => $ageMin,
                     'age[max]' => $ageMax,
+                    'age_step' => '1',
                     'by' => $this->params['form']['by'],
                     'country' => $this->params['form']['country'],
                     'region' => $this->params['form']['region'],
-                    'subregion' => array(),
+                    'subregion[]' => array(),
                     'distance[min]' => '',
                     'distance[max]' => '',
+                    'distance_step' => '10',
                     'pseudo' => '',
                     'sex' => $this->params['form']['sex'],
                     'size[min]' => $sizeMin,
                     'size[max]' => $sizeMax,
+                    'size_step' => '5',
                     'weight[min]' => '',
                     'weight[max]' => '',
-                    'shape' => $this->params['form']['shape'],
-                    'hair_size' => array(),
-                    'hair_color' => array(),
-                    'eyes_color' => array(),
-                    'origins' => array(),
-                    'style' => array(),
-                    'features' => array(),
-                    'character' => array(),
-                    'diet' => array(),
-                    'alcohol' => array(),
-                    'tobacco' => array(),
+                    'weight_step' => '5',
+                    'mandatory[]' => 'shape',
+                    'shape[]' => array($this->params['form']['shape']),
+                    'mandatory[]' => 'eyes_color',
+                    'eyes_color[]' => array(),
+                    'mandatory[]' => 'origins',
+                    'origins[]' => array(),
+                    'mandatory[]' => 'hair_color',
+                    'hair_color[]' => array(),
+                    'mandatory[]' => 'hair_size',
+                    'hair_size[]' => array(),
+                    'mandatory[]' => 'hair_style',
+                    'hair_style[]' => array(),
+                    'mandatory[]' => 'styles',
+                    'styles[]' => array(),
+                    'mandatory[]' => 'character',
+                    'character[]' => array(),
+                    'mandatory[]' => 'features',
+                    'features[]' => array(),
+                    'mandatory[]' => 'diet',
+                    'diet[]' => array(),
+                    'mandatory[]' => 'favourite_food',
+                    'favourite_food[]'=> array(),
+                    'mandatory[]' => 'tobacco',
+                    'tobacco[]' => array(),
+                    'mandatory[]' => 'alcohol',
+                    'alcohol[]' => array(),
                 ));
 
                 $searchFormSubmit = true;
