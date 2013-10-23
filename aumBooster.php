@@ -198,6 +198,7 @@ class aumBooster
 
                 $array = $form->getValues();
                 // override form value here
+                $array['pseudo'] = "";
                 $array['age[min]'] = $ageMin;
                 $array['age[max]'] = $ageMax;
                 $array['by'] = $this->params['form']['by'];
@@ -234,7 +235,7 @@ class aumBooster
 
         try
         {
-            preg_match('/var members = (.*);/', $this->client->getResponse()->getContent(), $matches);
+            preg_match('/var members = (.*),/', $this->client->getResponse()->getContent(), $matches);
             $res = json_decode($matches[1]);
             $users = $res->members;
         }
