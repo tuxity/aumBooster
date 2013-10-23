@@ -333,7 +333,7 @@ class aumBooster
                     }
                 }
 
-                preg_match('/var members = (.*);/', $this->client->getResponse()->getContent(), $matches);
+                preg_match('/var members = (.*),/', $this->client->getResponse()->getContent(), $matches);
                 $res = json_decode($matches[1]);
                 if (empty($res->members)) // in case we reach the max of pages, so break and do again a research
                     break;
